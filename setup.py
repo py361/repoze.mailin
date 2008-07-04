@@ -23,21 +23,22 @@ from setuptools import setup, find_packages
 
 here = os.path.abspath(os.path.dirname(__file__))
 README = open(os.path.join(here, 'README.txt')).read()
+CHANGES = open(os.path.join(here, 'CHANGES.txt')).read()
 
 setup(name='repoze.atemplate',
       version=__version__,
       description='A template for repoze projects',
-      long_description=README,
+      long_description=README + '\n\n' +  CHANGES,
       classifiers=[
-        "Development Status :: 1 - Planning",
+        "Development Status :: 3 - Alpha",
         "Intended Audience :: Developers",
         "Programming Language :: Python",
         "Topic :: Internet :: WWW/HTTP",
         "Topic :: Internet :: WWW/HTTP :: Dynamic Content",
         "Topic :: Internet :: WWW/HTTP :: WSGI",
-        "Topic :: Internet :: WWW/HTTP :: WSGI :: Application",
+        "Topic :: Internet :: WWW/HTTP :: WSGI :: Middleware",
         ],
-      keywords='web application server wsgi zope',
+      keywords='web wsgi zope',
       author="Agendaless Consulting",
       author_email="repoze-dev@lists.repoze.org",
       url="http://www.repoze.org",
