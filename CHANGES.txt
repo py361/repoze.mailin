@@ -1,4 +1,7 @@
-0.1
+repoze.mailin Changelog
+=======================
 
-  Initial release.
+0.1 (unreleased)
+----------------
 
+- Initial release.

@@ -25,9 +25,9 @@ here = os.path.abspath(os.path.dirname(__file__))
 README = open(os.path.join(here, 'README.txt')).read()
 CHANGES = open(os.path.join(here, 'CHANGES.txt')).read()
 
-setup(name='repoze.atemplate',
+setup(name='repoze.mailin',
       version=__version__,
-      description='A template for repoze projects',
+      description='Map inbound mail onto application-defined handlers',
       long_description=README + '\n\n' +  CHANGES,
       classifiers=[
         "Development Status :: 3 - Alpha",
@@ -36,9 +36,8 @@ setup(name='repoze.atemplate',
         "Topic :: Internet :: WWW/HTTP",
         "Topic :: Internet :: WWW/HTTP :: Dynamic Content",
         "Topic :: Internet :: WWW/HTTP :: WSGI",
-        "Topic :: Internet :: WWW/HTTP :: WSGI :: Middleware",
         ],
-      keywords='web wsgi zope',
+      keywords='e-mail zope repoze',
       author="Agendaless Consulting",
       author_email="repoze-dev@lists.repoze.org",
       url="http://www.repoze.org",
@@ -48,17 +47,12 @@ setup(name='repoze.atemplate',
       namespace_packages=['repoze'],
       zip_safe=False,
       tests_require = [],
-      install_requires=[],
-      #test_suite="repoze.",
+      install_requires=['zope.interface',
+                       ],
+      test_suite="repoze.mailin",
       entry_points = """\
-        #[console_scripts]
-        #addzope2user = repoze.atemplate.scripts.adduser:main
-
-        #[repoze.project]
-        #initialize = repoze.atemplate.instance:mkinstance
-
-        #[paste.filter_app_factory]
-        #middleware = repoze.atemplate:constructor
+        [console_scripts]
+        draino = repoze.mailin.scripts.draino:main
       """
       )
 
