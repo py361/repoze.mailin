@@ -1,7 +1,10 @@
-import email.utils
 import mailbox
 import os
 import sqlite3
+try:
+    from email.utils import parsedate
+except ImportError: # Python < 2.6
+    from email.Utils import parsedate
 
 from zope.interface import implements
 
@@ -64,16 +67,19 @@ class MaildirStore:
         """
         to_store = mailbox.MaildirMessage(message)
         date = to_store['Date']
-        yy, mm, dd, hh, mt, ss, wd, jd, dst = email.utils.parsedate(date)
+        yy, mm, dd, hh, mt, ss, wd, jd, dst = parsedate(date)
         folder_name = self._getFolderName(yy, mm, dd)
         folder = self._getMaildir(folder_name)
-        with self.sql:
-            key = folder.add(to_store)
+        key = folder.add(to_store)
+        try:
             self.sql.execute('insert into messages'
                              '(message_id, year, month, day, maildir_key) '
                              'values("%s", %d, %d, %d, "%s")'
                               % (message_id, yy, mm, dd, key)
                             )
+        except:
+            folder.remove(key)
+            raise
 
     def iterkeys(self):
         """ See IMessageStore.

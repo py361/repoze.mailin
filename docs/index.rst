@@ -95,6 +95,12 @@ information to the blackboard.  They may also create new :term:`domain
 object` instances, or update an existing :term:`domain object` based on
 information in the message.
 
+Prerequisites
+=============
+
+This package requires Python 2.5 or later (Python 2.4's version of the
+'mailbox' module and the 'email' package are not solid enough for this
+application).
 
 Glossary
 ========
