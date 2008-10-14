@@ -1,4 +1,6 @@
 repoze.mailin TODOs
 ===================
 
-- [_] TBD
+- [X] Split out pending queue into separate module.
+
+- [_] Add an IMAP-based store and corresponding processing script.
