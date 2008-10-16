@@ -53,6 +53,7 @@ setup(name='repoze.mailin',
       entry_points = """\
         [console_scripts]
         draino = repoze.mailin.scripts.draino:main
+        pollster = repoze.mailin.scripts.pollster:main
       """
       )
 
