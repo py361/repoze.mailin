@@ -16,7 +16,16 @@ import sys, os
 # If your extensions are in another directory, add it here. If the directory
 # is relative to the documentation root, use os.path.abspath to make it
 # absolute, like shown here.
-#sys.path.append(os.path.abspath('some/directory'))
+parent = os.path.dirname(os.path.dirname(__file__))
+sys.path.append(os.path.abspath(parent))
+wd = os.getcwd()
+os.chdir(parent)
+os.system('%s setup.py test -q' % sys.executable)
+os.chdir(wd)
+
+for item in os.listdir(parent):
+    if item.endswith('.egg'):
+        sys.path.append(os.path.join(parent, item))
 
 # General configuration
 # ---------------------
@@ -86,7 +95,7 @@ pygments_style = 'sphinx'
 # The style sheet to use for HTML and HTML Help pages. A file of that name
 # must exist either in Sphinx' static/ path, or in one of the custom paths
 # given in html_static_path.
-html_style = 'default.css'
+html_style = 'repoze.css'
 
 # The name for this set of Sphinx documents.  If None, it defaults to
 # "<project> v<release> documentation".
