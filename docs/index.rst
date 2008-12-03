@@ -102,6 +102,23 @@ This package requires Python 2.5 or later (Python 2.4's version of the
 'mailbox' module and the 'email' package are not solid enough for this
 application).
 
+Plugins
+=======
+
+This package supplies the following plugin implementations:
+
+    :class:`repoze.mailin.maildir.MaildirStore`
+        implements ``IMessageStore`` using a standard :term:maildir,
+        as implemented via the :module:`maildir` module in the Python
+        standard library.  Ingested messages are stored in date-stamped
+        folders within / under the main in-box;  the plugin provides
+        an additional API for moving messages from the in-box into the
+        appropriate sub-folder.  The plugin maintains an index of the
+        ingested messages in a sqlite database table.
+
+    :class:`repoze.mailin.pending.PendingQueue`
+        implements ``IPendingQueue`` via a sqlite database table.
+
 Glossary
 ========
 

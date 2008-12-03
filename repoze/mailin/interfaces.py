@@ -52,6 +52,19 @@ class StopProcessing(Exception):
     """ Raised by IMessageFilter instances to halt procesing of a message.
     """
 
+class IBlackboardFactory(Interface):
+    """ Utility for creating a pre-initialized blackboard.
+    """
+    def __call__(message):
+        """ Return an IBlackboard instance for the message.
+        """
+
+class IBlackboard(Interface):
+    """ Mapping for recording the results of message processing.
+
+    - API is that of a Python dict.
+    """
+
 class IMessageFilter(Interface):
     """ Plugin interface for processing messages.
     """
@@ -60,7 +73,7 @@ class IMessageFilter(Interface):
 
         - 'message' will be an instance of 'email.Message'.
 
-        - 'blackboard' is a mapping representing the current processing state.
+        - 'blackboard' will be an 'IBlackboard.
 
         - Raise 'StopProcessing' to cancel further processing of 'message'.
         """
