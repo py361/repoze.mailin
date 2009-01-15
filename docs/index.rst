@@ -66,35 +66,6 @@ their message IDs into a queue of pending messages.  The API for this
 queue, ``IPendingQueue``, is implemented by a plugin defined via another
 entry point.
 
-
-Message Filtering
-=================
-
-Because associating messages onto a given application is full of policy,
-:mod:`repoze.mailin` uses a set of message filters to extract
-meaningful state from each message.  Such filters must conform to the
-``IMessageFilter`` API.
-
-Filters fire in an order defined in configuration, and have access to the
-following information:
-
-- The parsed message object itself (headers + payload);  the payload
-  is rewound before each filter fires.
-
-- A "blackboard" mapping, holding any values extracted by filters
-  which ran previously against the message.  The blackboard may contain
-  one or more :term:`domain object` instnaces which have been accessed or
-  modified by earlier filters.
-
-Any filter can raise a special exception,
-:exc:`repoze.mailin.interfaces.StopProcessing`, to stop any further
-processing of the current message.
-
-Filters which are relevant to a given message normally add additional
-information to the blackboard.  They may also create new :term:`domain
-object` instances, or update an existing :term:`domain object` based on
-information in the message.
-
 Prerequisites
 =============
 
@@ -123,10 +94,6 @@ Glossary
 ========
 
 .. glossary::
-
-    domain object
-        An instance of a custom Python class, created and managed by
-        one or more of Friday's plugins.
 
     entry point
         A conventional name, as defined by
