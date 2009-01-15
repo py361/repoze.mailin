@@ -8,6 +8,10 @@ Interfaces
 
 .. autointerface:: repoze.mailin.interfaces.IPendingQueue
 
+.. autointerface:: repoze.mailin.interfaces.IBlackboardFactory
+
+.. autointerface:: repoze.mailin.interfaces.IBlackboard
+
 .. autointerface:: repoze.mailin.interfaces.IMessageFilter
 
 Exceptions
