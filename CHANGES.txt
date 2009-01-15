@@ -1,7 +1,12 @@
 repoze.mailin Changelog
 =======================
 
-0.1 (unreleased)
+After 9.1
+---------
+
+- Began specification of a framework for pluggable message processing.
+
+0.1 (2009-01-15)
 ----------------
 
 - Initial release.
