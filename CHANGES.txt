@@ -1,6 +1,15 @@
 repoze.mailin Changelog
 =======================
 
+
+0.1.1 (2009-01-16)
+------------------
+
+- Added ``isolation_level`` argument to ``PendingQueue.__init__``, to allow
+  control of how the queue commits transactions.  The default, ``None``, 
+  causes the connection to autocommit after each statement.
+
+
 0.1 (2009-01-15)
 ----------------
 
