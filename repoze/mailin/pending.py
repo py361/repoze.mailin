@@ -10,7 +10,7 @@ class PendingQueue(object):
     """
     implements(IPendingQueue)
 
-    def __init__(self, path=None, dbfile=None):
+    def __init__(self, path=None, dbfile=None, isolation_level=None):
 
         self.path = path
 
@@ -20,7 +20,8 @@ class PendingQueue(object):
         if dbfile is None:
             dbfile = os.path.join(path, 'pending.db')
 
-        sql = self.sql = sqlite3.connect(dbfile)
+        sql = self.sql = sqlite3.connect(dbfile,
+                                         isolation_level=isolation_level)
 
         found = sql.execute('select * from sqlite_master '
                              'where type = "table" and name = "pending"'

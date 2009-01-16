@@ -26,6 +26,11 @@ class PendingQueueTests(unittest.TestCase):
         from repoze.mailin.interfaces import IPendingQueue
         verifyObject(IPendingQueue, self._makeOne())
 
+    def test_ctor_defaults(self):
+        defaulted = self._getTargetClass()()
+        self.assertEqual(defaulted.path, None)
+        self.assertEqual(defaulted.sql.isolation_level, None) # autocommit
+
     def test___nonzero___empty(self):
         pq = self._makeOne()
         self.failIf(pq)
