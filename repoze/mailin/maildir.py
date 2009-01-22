@@ -27,12 +27,13 @@ class MaildirStore:
     """
     implements(IMessageStore)
 
-    def __init__(self, path, dbfile=None):
+    def __init__(self, path, dbfile=None, isolation_level=None):
         self.path = path
         self.mdpath = os.path.join(path, 'Maildir')
         if dbfile is None:
             dbfile = os.path.join(path, 'metadata.db')
-        sql = self.sql = sqlite3.connect(dbfile)
+        sql = self.sql = sqlite3.connect(dbfile,
+                                         isolation_level=isolation_level)
         found = sql.execute('select * from sqlite_master '
                              'where type = "table" and name = "messages"'
                            ).fetchall()
