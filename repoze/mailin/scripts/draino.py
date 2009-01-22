@@ -114,6 +114,10 @@ class Draino:
             if self.verbose > 1:
                 print ' -', drained
 
+        if not self.dry_run:
+            md.sql.commit()
+            pq.sql.commit()
+
     def run(self):
         if self.verbose:
             print '=' * 78
