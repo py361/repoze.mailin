@@ -109,11 +109,10 @@ class MaildirStore:
         keys = list(md.iterkeys())  # avoid mutating while iterating
         for key in sorted(keys):    # preserve order
             message = md.get_message(key)
-            if not dry_run:
-                md.remove(key)
             message_id = message['Message-ID']
             if not dry_run:
                 self[message_id] = message
+                md.remove(key)
             if not dry_run and pending_queue is not None:
                 pending_queue.push(message_id)
             yield message_id

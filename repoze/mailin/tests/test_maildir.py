@@ -202,6 +202,24 @@ class MaildirStoreTests(unittest.TestCase):
         self.assertEqual(len(root), 1)
         self.assertEqual(pq._pushed, MESSAGE_IDS[:2])
 
+    def test_drainInbox_not_empty_w_pq_dup_ids(self):
+        MESSAGE_IDS = ['<abcdef@example.com>',
+                       '<defghi@example.com>',
+                       '<defghi@example.com>',
+                      ]
+        self._populateInbox(MESSAGE_IDS)
+
+        md = self._makeOne()
+        root = md._getMaildir()
+
+        from sqlite3 import IntegrityError
+        pq = DummyPQ()
+        self.assertRaises(IntegrityError, list, md.drainInbox(pq))
+
+        self.assertEqual(len(list(md.iterkeys())), 2)
+        self.assertEqual(len(root), 1)
+        self.assertEqual(pq._pushed, MESSAGE_IDS[:2])
+
 class DummyPQ:
     def __init__(self):
         self._pushed = []
