@@ -100,3 +100,15 @@ class PendingQueueTests(unittest.TestCase):
         self.assertEqual(found[0], MESSAGE_IDS[0])
         self.assertEqual(found[1], MESSAGE_IDS[1])
 
+    def test_close_on_evict(self):
+        pq = self._makeOne()
+        sql = pq.sql = DummySql()
+        pq = None
+        self.failUnless(sql.closed)
+        
+class DummySql(object):
+    closed = False
+
+    def close(self):
+        self.closed = True
+        
