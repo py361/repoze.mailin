@@ -1,17 +1,20 @@
 repoze.mailin Changelog
 =======================
 
-After 0.1.x
------------
+0.1.3 (2009-03-13)
+------------------
 
-- Began specification of a framework for pluggable message processing.
+- Added ``PendingQueue.__del__`` to ensure closing the SQL connection.
+
+- ``MaildirStore.drainInbox``:  don't remove the message from the maildir
+  until after adding to the store.
 
 
 0.1.2 (2009-01-22)
 ------------------
 
-- Made 'draino' script explicitly commit sqlite transactions if not running
-  in 'dry-run' mode.
+- Made ``draino`` script explicitly commit sqlite transactions if not running
+  in ``dry-run`` mode.
 
 - Added ``isolation_level`` argument to ``MaildirStore.__init__``, to allow
   control of how the queue commits transactions.  The default, ``None``, 
