@@ -71,3 +71,8 @@ class PendingQueue(object):
 
     def __iter__(self):
         return self.sql.execute('select id, message_id from pending ')
+
+    def __del__(self):
+        self.sql.close()
+        del self.sql
+        
