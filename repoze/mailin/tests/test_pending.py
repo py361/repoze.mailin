@@ -86,7 +86,6 @@ class PendingQueueTests(unittest.TestCase):
             pq.push(message_id)
         found = list(pq.pop(w))
 
-
     def test_pop_not_empty_with_many(self):
         MESSAGE_IDS = ['<abcdef@example.com>',
                        '<defghi@example.com>',
@@ -99,16 +98,33 @@ class PendingQueueTests(unittest.TestCase):
         self.assertEqual(len(found), 2)
         self.assertEqual(found[0], MESSAGE_IDS[0])
         self.assertEqual(found[1], MESSAGE_IDS[1])
+        residue = list(pq)
+        self.assertEqual(len(residue), 1)
+
+    def test_pop_not_empty_with_less_than_requested(self):
+        MESSAGE_IDS = ['<abcdef@example.com>',
+                       '<defghi@example.com>',
+                       '<ghijkl@example.com>',
+                      ]
+        pq = self._makeOne()
+        for message_id in MESSAGE_IDS:
+            pq.push(message_id)
+        found = list(pq.pop(5))
+        self.assertEqual(len(found), 3)
+        self.assertEqual(found[0], MESSAGE_IDS[0])
+        self.assertEqual(found[1], MESSAGE_IDS[1])
+        self.assertEqual(found[2], MESSAGE_IDS[2])
+        residue = list(pq)
+        self.assertEqual(len(residue), 0)
 
     def test_close_on_evict(self):
         pq = self._makeOne()
         sql = pq.sql = DummySql()
         pq = None
         self.failUnless(sql.closed)
-        
+
 class DummySql(object):
     closed = False
 
     def close(self):
         self.closed = True
-        
