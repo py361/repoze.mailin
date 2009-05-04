@@ -43,13 +43,14 @@ class PendingQueue(object):
         """
         cursor = self.sql.execute('select id, message_id from pending '
                                  'order by id')
+        rows = cursor.fetchmany(how_many)
+        cursor.close()
         count = 0
         popped = []
         while count < how_many:
-            found = cursor.fetchone()
-            if found is None:
-                raise StopIteration
-            id, m_id = found
+            if not rows:
+                break
+            id, m_id = rows.pop(0)
             yield m_id
             popped.append(str(id))
             count += 1
@@ -71,3 +72,7 @@ class PendingQueue(object):
 
     def __iter__(self):
         return self.sql.execute('select id, message_id from pending ')
+
+    def __del__(self):
+        self.sql.close()
+        del self.sql
