@@ -1,8 +1,8 @@
 repoze.mailin Changelog
 =======================
 
-After 0.1.3 (unreleased)
-------------------------
+0.1.4 (2009-05-04)
+------------------
 
 - Fixed case where pop with multiple pending IDs and a given isolation level
   would cause the delete to fail with 'database locked'.  See:
