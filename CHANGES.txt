@@ -1,6 +1,12 @@
 repoze.mailin Changelog
 =======================
 
+0.1.5 (2009-05-31)
+
+- Skip incoming messages with duplicate message ids to messages we have 
+  already processed.
+  
+  
 0.1.4 (2009-05-04)
 ------------------
 
