@@ -111,8 +111,17 @@ class MaildirStore:
             message = md.get_message(key)
             message_id = message['Message-ID']
             if not dry_run:
-                self[message_id] = message
-                md.remove(key)
+                try:
+                    self[message_id] = message
+                except sqlite3.IntegrityError:
+                    # Occasionally, certain Microsoft clients will resend
+                    # an identical message with the same message id
+                    # Skip these.
+                    continue
+                finally:
+                    # Make sure we remove the message from the incoming
+                    # Maildir no matter what.
+                    md.remove(key)
             if not dry_run and pending_queue is not None:
                 pending_queue.push(message_id)
             yield message_id
