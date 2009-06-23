@@ -72,6 +72,10 @@ class PendingQueueTests(unittest.TestCase):
         pq = self._makeOne()
         self.failIf(pq)
 
+    def test___iter___empty(self):
+        pq = self._makeOne()
+        self.failIf(list(pq))
+
     def test_pop_empty_returns_empty(self):
         pq = self._makeOne()
         self.assertEqual(list(pq.pop()), [])
@@ -79,11 +83,18 @@ class PendingQueueTests(unittest.TestCase):
     def test_pop_empty_w_logger(self):
         logger = DummyLogger()
         pq = self._makeOne(logger=logger)
-        self.failUnless(pq.logger is logger)
-        popped = list(pq.pop())
+        pq.pop()
         self.assertEqual(len(logger._logged), 1)
         self.assertEqual(logger._logged[0],
                          (('Queue underflow: requested 1, popped 0',), {}))
+
+    def test_pop_empty_with_many(self):
+        logger = DummyLogger()
+        pq = self._makeOne(logger=logger)
+        found = pq.pop(2)
+        self.assertEqual(len(found), 0)
+        self.assertEqual(logger._logged[0],
+                         (('Queue underflow: requested 2, popped 0',), {}))
 
     def test_remove_nonesuch_raises_KeyError(self):
         pq = self._makeOne()
@@ -99,14 +110,14 @@ class PendingQueueTests(unittest.TestCase):
         MESSAGE_ID ='<defghi@example.com>'
         pq = self._makeOne()
         pq.push(MESSAGE_ID)
-        list(pq.pop())        # consume generator, ignore results
+        pq.pop()
         self.failIf(pq)
 
     def test_push_then_pop_returns_message_ID(self):
         MESSAGE_ID ='<defghi@example.com>'
         pq = self._makeOne()
         pq.push(MESSAGE_ID)
-        found = list(pq.pop())
+        found = pq.pop()
         self.assertEqual(len(found), 1)
         self.assertEqual(found[0], MESSAGE_ID)
 
@@ -117,14 +128,6 @@ class PendingQueueTests(unittest.TestCase):
         pq.remove(MESSAGE_ID)
         self.failIf(pq)
 
-    def test_pop_empty_with_many(self):
-        logger = DummyLogger()
-        pq = self._makeOne(logger=logger)
-        found = list(pq.pop(2))
-        self.assertEqual(len(found), 0)
-        self.assertEqual(logger._logged[0],
-                         (('Queue underflow: requested 2, popped 0',), {}))
-
     def test_pop_not_empty_with_many(self):
         MESSAGE_IDS = ['<abcdef@example.com>',
                        '<defghi@example.com>',
@@ -133,7 +136,7 @@ class PendingQueueTests(unittest.TestCase):
         pq = self._makeOne()
         for message_id in MESSAGE_IDS:
             pq.push(message_id)
-        found = list(pq.pop(2))
+        found = pq.pop(2)
         self.assertEqual(len(found), 2)
         self.assertEqual(found[0], MESSAGE_IDS[0])
         self.assertEqual(found[1], MESSAGE_IDS[1])
@@ -149,7 +152,7 @@ class PendingQueueTests(unittest.TestCase):
         pq = self._makeOne(logger=logger)
         for message_id in MESSAGE_IDS:
             pq.push(message_id)
-        found = list(pq.pop(5))
+        found = pq.pop(5)
         self.assertEqual(len(found), 3)
         self.assertEqual(found[0], MESSAGE_IDS[0])
         self.assertEqual(found[1], MESSAGE_IDS[1])
@@ -165,7 +168,7 @@ class PendingQueueTests(unittest.TestCase):
         MESSAGE_ID = '<086801c9f304$8a00d960$d958485f@\xef\xe0\xf8\xe0>'
         pq = self._makeOne()
         pq.push(MESSAGE_ID)
-        found = list(pq.pop())
+        found = pq.pop()
         self.assertEqual(len(found), 1)
         self.assertEqual(found[0], MESSAGE_ID)
         residue = list(pq)
