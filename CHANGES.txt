@@ -1,8 +1,8 @@
 repoze.mailin Changelog
 =======================
 
-Unreleased
-----------
+0.2 (2009-06-23)
+----------------
 
 - 100% unit test coverage.
 

@@ -12,7 +12,7 @@
 #
 ##############################################################################
 
-__version__ = '0.2dev'
+__version__ = '0.2'
 
 import os
 
@@ -30,7 +30,7 @@ setup(name='repoze.mailin',
       description='Map inbound mail onto application-defined handlers',
       long_description=README + '\n\n' +  CHANGES,
       classifiers=[
-        "Development Status :: 3 - Alpha",
+        "Development Status :: 4 - Beta",
         "Intended Audience :: Developers",
         "Programming Language :: Python",
         "Topic :: Internet :: WWW/HTTP",
