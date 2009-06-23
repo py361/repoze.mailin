@@ -159,6 +159,18 @@ class PendingQueueTests(unittest.TestCase):
         self.assertEqual(logger._logged[0],
                          (('Queue underflow: requested 5, popped 3',), {}))
 
+    def test_pop_nonunicode_message_id(self):
+        # Message-Id is actual message id encountered in field,
+        # which caused mail-in to break.
+        MESSAGE_ID = '<086801c9f304$8a00d960$d958485f@\xef\xe0\xf8\xe0>'
+        pq = self._makeOne()
+        pq.push(MESSAGE_ID)
+        found = list(pq.pop())
+        self.assertEqual(len(found), 1)
+        self.assertEqual(found[0], MESSAGE_ID)
+        residue = list(pq)
+        self.assertEqual(len(residue), 0)
+
     def test_close_on_evict(self):
         pq = self._makeOne()
         sql = pq.sql = DummySql()

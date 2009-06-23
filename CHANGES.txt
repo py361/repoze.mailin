@@ -4,6 +4,9 @@ repoze.mailin Changelog
 Unreleased
 ----------
 
+- Hardened ``PendingQueue.pop`` against RFC-violating message IDs with
+  non-decodable 8-bit characters.
+
 - Added logging of underflows in ``PendingQueue.pop``.
 
 - Made ``PendingQueue.pop`` a normal method, rather than a generator.

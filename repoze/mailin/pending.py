@@ -27,6 +27,7 @@ class PendingQueue(object):
 
         sql = self.sql = sqlite3.connect(dbfile,
                                          isolation_level=isolation_level)
+        sql.text_factory = str
 
         found = sql.execute('select * from sqlite_master '
                              'where type = "table" and name = "pending"'
