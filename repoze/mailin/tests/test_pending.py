@@ -71,20 +71,10 @@ class PendingQueueTests(unittest.TestCase):
         pq.remove(MESSAGE_ID)
         self.failIf(pq)
 
-    def test_pop_not_empty_with_many(self):
+    def test_pop_empty_with_many(self):
         pq = self._makeOne()
         found = list(pq.pop(2))
         self.assertEqual(len(found), 0)
-
-    def test_pop_not_empty_with_many(self):
-        MESSAGE_IDS = ['<abcdef@example.com>',
-                       '<defghi@example.com>',
-                       '<ghijkl@example.com>',
-                      ]
-        pq = self._makeOne()
-        for message_id in MESSAGE_IDS:
-            pq.push(message_id)
-        found = list(pq.pop(w))
 
     def test_pop_not_empty_with_many(self):
         MESSAGE_IDS = ['<abcdef@example.com>',
