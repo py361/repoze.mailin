@@ -3,7 +3,7 @@ import os
 import sqlite3
 try:
     from email.utils import parsedate
-except ImportError: # Python < 2.6
+except ImportError: # Python < 2.6  #pragma NO COVERAGE
     from email.Utils import parsedate
 
 from zope.interface import implements

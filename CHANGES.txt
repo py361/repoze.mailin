@@ -4,6 +4,8 @@ repoze.mailin Changelog
 Unreleased
 ----------
 
+- 100% unit test coverage.
+
 - Hardened ``PendingQueue.pop`` against RFC-violating message IDs with
   non-decodable 8-bit characters.
 

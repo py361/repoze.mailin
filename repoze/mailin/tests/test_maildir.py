@@ -1,5 +1,7 @@
 import unittest
 
+_marker = object()
+
 class MaildirStoreTests(unittest.TestCase):
 
     _tempdir = None
@@ -13,10 +15,16 @@ class MaildirStoreTests(unittest.TestCase):
         from repoze.mailin.maildir import MaildirStore
         return MaildirStore
 
-    def _makeOne(self, path=None, dbfile=':memory:'):
+    def _makeOne(self,
+                 path=None,
+                 dbfile=':memory:',
+                 isolation_level=_marker,
+                ):
         if path is None:
             path = self._getTempdir()
-        return self._getTargetClass()(path, dbfile)
+        if isolation_level is _marker:
+            return self._getTargetClass()(path, dbfile)
+        return self._getTargetClass()(path, dbfile, isolation_level)
 
     def _getTempdir(self):
         import tempfile
@@ -60,6 +68,26 @@ class MaildirStoreTests(unittest.TestCase):
         from repoze.mailin.interfaces import IMessageStore
         verifyObject(IMessageStore, self._makeOne())
 
+    def test_ctor_defaults(self):
+        import os
+        md = self._makeOne()
+        self.failUnless(md.sql.execute(
+                             'select * from sqlite_master '
+                             'where type = "table" and name = "messages"'
+                             ).fetchall())
+        self.assertEqual(md.sql.isolation_level, None)
+
+    def test_ctor_w_dbfile(self):
+        import os
+        path = self._getTempdir()
+        md = self._makeOne(path, dbfile=None)
+        self.failUnless(os.path.exists(os.path.join(md.path, 'metadata.db')))
+
+    def test_ctor_w_isolation_level(self):
+        import os
+        md = self._makeOne(isolation_level='DEFERRED')
+        self.assertEqual(md.sql.isolation_level, 'DEFERRED')
+
     def test_iterkeys_empty(self):
         md = self._makeOne()
         self.assertEqual(len(list(md.iterkeys())), 0)
@@ -76,6 +104,47 @@ class MaildirStoreTests(unittest.TestCase):
     def test___getitem___nonesuch(self):
         md = self._makeOne()
         self.assertRaises(KeyError, lambda: md['nonesuch'])
+
+    def test___getitem___valid_message_id_no_datestamp_folder(self):
+        import os
+        import mailbox
+        path = self._getTempdir()
+        root = mailbox.Maildir(os.path.join(path, 'Maildir'),
+                               factory=None, create=True)
+        md = self._makeOne(path)
+        md.sql.execute('insert into messages'
+                        '(message_id, year, month, day, maildir_key)'
+                       ' values("ABC", 2009, 6, 23, "ABC")')
+        self.assertRaises(KeyError, lambda: md['ABC'])
+
+    def test___getitem___valid_message_id_w_datestamp_folder_wo_message(self):
+        import os
+        import mailbox
+        path = self._getTempdir()
+        root = mailbox.Maildir(os.path.join(path, 'Maildir'),
+                               factory=None, create=True)
+        root.add_folder('2009.06.23')
+        md = self._makeOne(path)
+        md.sql.execute('insert into messages'
+                         '(message_id, year, month, day, maildir_key)'
+                       ' values("ABC", 2009, 6, 23, "ABC")')
+        self.assertRaises(KeyError, lambda: md['ABC'])
+
+    def test___getitem___valid_message_id_w_datestamp_folder_w_message(self):
+        import os
+        import mailbox
+        path = self._getTempdir()
+        root = mailbox.Maildir(os.path.join(path, 'Maildir'),
+                               factory=None, create=True)
+        root.add_folder('2009.06.23')
+        folder = root.get_folder('2009.06.23')
+        to_store = mailbox.MaildirMessage('STORE_ME')
+        key = folder.add(to_store)
+        md = self._makeOne(path)
+        md.sql.execute('insert into messages'
+                         '(message_id, year, month, day, maildir_key)'
+                       ' values("ABC", 2009, 6, 23, "%s")' % key)
+        message = md['ABC'] # doesn't raise
 
     def test___setitem___text(self):
         import calendar
