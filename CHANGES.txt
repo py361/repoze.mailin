@@ -1,6 +1,17 @@
 repoze.mailin Changelog
 =======================
 
+Unreleased
+----------
+
+- Added logging of underflows in ``PendingQueue.pop``.
+
+- Made ``PendingQueue.pop`` a normal method, rather than a generator.
+
+- Added ``PendingQueue.logger`` attribute:  if set, should obey the
+  interface of a ``logging`` module logger.
+
+
 0.1.5 (2009-05-31)
 ------------------
 

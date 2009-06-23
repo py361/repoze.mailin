@@ -10,7 +10,12 @@ class PendingQueue(object):
     """
     implements(IPendingQueue)
 
-    def __init__(self, path=None, dbfile=None, isolation_level=None):
+    def __init__(self,
+                 path=None,
+                 dbfile=None,
+                 isolation_level=None,
+                 logger=None,
+                ):
 
         self.path = path
 
@@ -32,6 +37,11 @@ class PendingQueue(object):
                         ', message_id varchar(1024) unique'
                         ')')
 
+        if logger is not None and getattr(logger, 'log', None) is None:
+            raise ValueError('logger must implement logging module interface.')
+
+        self.logger = logger
+
     def push(self, message_id):
         """ See IPendingQueue.
         """
@@ -46,16 +56,20 @@ class PendingQueue(object):
         rows = cursor.fetchmany(how_many)
         cursor.close()
         count = 0
-        popped = []
-        while count < how_many:
-            if not rows:
-                break
+        popped_ids = []
+        popped_m_ids = []
+        while rows and count < how_many:
             id, m_id = rows.pop(0)
-            yield m_id
-            popped.append(str(id))
+            popped_m_ids.append(m_id)
+            popped_ids.append(str(id))
             count += 1
-        set = ','.join(['"%s"' % x for x in popped])
+        if count < how_many:
+            if self.logger is not None:
+                self.logger.log('Queue underflow: requested %d, popped %d'
+                                  % (how_many, count))
+        set = ','.join(['"%s"' % x for x in popped_ids])
         self.sql.execute('delete from pending where id in (%s)' % set)
+        return popped_m_ids
 
     def remove(self, message_id):
         """ See IPendingQueue.
