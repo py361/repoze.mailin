@@ -27,9 +27,22 @@ class PendingQueueTests(unittest.TestCase):
         verifyObject(IPendingQueue, self._makeOne())
 
     def test_ctor_defaults(self):
-        defaulted = self._getTargetClass()()
-        self.assertEqual(defaulted.path, None)
-        self.assertEqual(defaulted.sql.isolation_level, None) # autocommit
+        queue = self._getTargetClass()()
+        self.assertEqual(queue.path, None)
+        self.assertEqual(queue.sql.isolation_level, None) # autocommit
+
+    def test_ctor_w_path_wo_dbfile(self):
+        import os
+        import tempfile
+        tempdir = self._tempdir = tempfile.mkdtemp()
+        queue = self._makeOne(tempdir, None)
+        self.assertEqual(queue.path, tempdir)
+        self.failUnless(os.path.isfile(os.path.join(tempdir, 'pending.db')))
+
+    def test_ctor_w_isolation_level(self):
+        queue = self._makeOne(isolation_level='DEFERRED')
+        self.assertEqual(queue.path, None)
+        self.assertEqual(queue.sql.isolation_level, 'DEFERRED')
 
     def test___nonzero___empty(self):
         pq = self._makeOne()
