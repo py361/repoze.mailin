@@ -212,13 +212,14 @@ class MaildirStoreTests(unittest.TestCase):
         md = self._makeOne()
         root = md._getMaildir()
 
-        from sqlite3 import IntegrityError
         pq = DummyPQ()
-        self.assertRaises(IntegrityError, list, md.drainInbox(pq))
+        drained = list(md.drainInbox(pq))
 
+        self.assertEqual(drained, MESSAGE_IDS[:2])
         self.assertEqual(len(list(md.iterkeys())), 2)
-        self.assertEqual(len(root), 1)
+        self.assertEqual(len(root), 0)
         self.assertEqual(pq._pushed, MESSAGE_IDS[:2])
+
 
 class DummyPQ:
     def __init__(self):
