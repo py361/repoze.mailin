@@ -37,6 +37,7 @@ class PendingQueue(object):
                         '( id integer primary key'
                         ', message_id varchar(1024) unique'
                         ', quarantined boolean'
+                        ', error_msg'
                         ')')
 
         if logger is not None and getattr(logger, 'log', None) is None:
@@ -81,18 +82,20 @@ class PendingQueue(object):
         if cursor.rowcount == 0:
             raise KeyError(message_id)
 
-    def quarantine(self, message_id):
+    def quarantine(self, message_id, error_msg=None):
         """ See IPendingQueue
         """
         if message_id in self:
             self.sql.execute(
-                'update pending set quarantined=? where message_id=?',
-                (True, message_id)
+                'update pending set quarantined=?, error_msg=? '
+                'where message_id=?',
+                (True, error_msg, message_id)
             )
         else:
             self.sql.execute(
-                "insert into pending(message_id,quarantined) values (?, ?)",
-                (message_id, True)
+                'insert into pending(message_id,quarantined,error_msg) '
+                'values (?,?,?)',
+                (message_id, True, error_msg)
             )
 
     def iter_quarantine(self):
@@ -104,11 +107,23 @@ class PendingQueue(object):
         for result in results:
             yield result[0]
 
+    def get_error_message(self, message_id):
+        """ See IPendingQueue
+        """
+        error_msg = self.sql.execute(
+            'select error_msg from pending '
+            'where message_id=? and quarantined=1',
+            (message_id,)
+        ).fetchone()
+
+        if error_msg is None:
+            raise KeyError(message_id)
+        return error_msg[0]
 
     def clear_quarantine(self):
         """ See IPendingQueue
         """
-        self.sql.execute('update pending set quarantined=0')
+        self.sql.execute('update pending set quarantined=0, error_msg=null')
 
     def __nonzero__(self):
         """ See IPendingQueue.

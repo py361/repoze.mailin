@@ -44,14 +44,19 @@ class IPendingQueue(Interface):
         - Raise KeyError if not found.
         """
 
-    def quarantine(message_id):
+    def quarantine(message_id, error_msg=None):
         """ Adds 'message_id' to quarantine for this queue.  Message must be
-        moved out of quarantine before it can be processed.
+        moved out of quarantine before it can be processed.  May optionally
+        pass in error_msg string as reason for the quarantine.
 
         """
 
     def iter_quarantine():
         """ Returns an iterator for message_ids that are in the quaratine.
+        """
+
+    def get_error_message(message_id):
+        """ Returns the error message for the quarantined message_id.
         """
 
     def clear_quarantine():
