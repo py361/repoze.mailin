@@ -11,6 +11,20 @@ Unreleased
 
 - Added quarantine to pending queue.
 
+  N.B.:  this change is backward-incompatible with existing databases,
+  which will not have the extra columns required to support the new feature.
+  The simplest fix is as follows:
+  
+  * Stop any ongoing processing using the pending database.
+  
+  * Dump any existing message IDs from the database.
+
+  * Move aside the database file.
+
+  * Rerun the script which creates the database file.
+
+  * Restore any dumped message IDs.
+
 0.2 (2009-06-23)
 ----------------
 
