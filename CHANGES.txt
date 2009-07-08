@@ -1,8 +1,8 @@
 repoze.mailin Changelog
 =======================
 
-Unreleased
-----------
+0.3 (2009-07-08)
+----------------
 
 - Added quarantine to pending queue.
 
