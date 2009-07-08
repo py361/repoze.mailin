@@ -180,6 +180,52 @@ class PendingQueueTests(unittest.TestCase):
         pq = None
         self.failUnless(sql.closed)
 
+    def test_quarantine_nonexisting_message_id(self):
+        MESSAGE_ID = '<abcdef@example.com>'
+        pq = self._makeOne()
+        pq.quarantine(MESSAGE_ID)
+        found = list(pq.iter_quarantine())
+        self.assertEqual(len(found), 1)
+        self.assertEqual(MESSAGE_ID, found[0])
+
+    def test_quarantine_existing_message_id(self):
+        MESSAGE_ID = '<abcdef@example.com>'
+        pq = self._makeOne()
+        pq.push(MESSAGE_ID)
+        pq.quarantine(MESSAGE_ID)
+        found = list(pq.iter_quarantine())
+        self.assertEqual(len(found), 1)
+        self.assertEqual(MESSAGE_ID, found[0])
+
+    def test_dont_iterate_quarantined_message_id(self):
+        MESSAGE_IDS = ['<abcdef@example.com>',
+                       '<defghi@example.com>',
+                       '<ghijkl@example.com>',
+                      ]
+        pq = self._makeOne()
+        for message_id in MESSAGE_IDS:
+            pq.push(message_id)
+        pq.quarantine(MESSAGE_IDS[1])
+        found = list(pq)
+        self.assertEqual(len(found), 2)
+        self.assertEqual(found[0][1], '<abcdef@example.com>')
+        self.assertEqual(found[1][1], '<ghijkl@example.com>')
+
+    def test_dont_pop_quarantined_message_id(self):
+        MESSAGE_IDS = ['<abcdef@example.com>',
+                       '<defghi@example.com>',
+                       '<ghijkl@example.com>',
+                      ]
+        pq = self._makeOne()
+        for message_id in MESSAGE_IDS:
+            pq.push(message_id)
+        pq.quarantine(MESSAGE_IDS[1])
+        found = list(pq.pop(3))
+        self.assertEqual(len(found), 2)
+        self.assertEqual(found[0], '<abcdef@example.com>')
+        self.assertEqual(found[1], '<ghijkl@example.com>')
+
+
 class DummySql(object):
     closed = False
 

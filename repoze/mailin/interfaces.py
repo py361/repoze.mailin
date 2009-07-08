@@ -5,7 +5,7 @@ class IMessageStore(Interface):
     """
     def __getitem__(message_id):
         """ Retrieve a message.
-        
+
         - Return an instance of 'email.Message'. (XXX text?)
 
         - Raise KeyError if no message with the given ID is found.
@@ -42,6 +42,20 @@ class IPendingQueue(Interface):
         """ Remove the given message ID from the queue.
 
         - Raise KeyError if not found.
+        """
+
+    def quarantine(message_id):
+        """ Adds 'message_id' to quarantine for this queue.  Message must be
+        moved out of quarantine before it can be processed.
+
+        """
+
+    def iter_quarantine():
+        """ Returns an iterator for message_ids that are in the quaratine.
+        """
+
+    def clear_quarantine():
+        """ Moves all messages out of quarantine to retry processing.
         """
 
     def __nonzero__():

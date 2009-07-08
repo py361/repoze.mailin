@@ -36,6 +36,7 @@ class PendingQueue(object):
             sql.execute('create table pending'
                         '( id integer primary key'
                         ', message_id varchar(1024) unique'
+                        ', quarantined boolean'
                         ')')
 
         if logger is not None and getattr(logger, 'log', None) is None:
@@ -46,14 +47,14 @@ class PendingQueue(object):
     def push(self, message_id):
         """ See IPendingQueue.
         """
-        self.sql.execute('insert into pending(message_id) '
-                         'values("%s")' % message_id)
+        self.sql.execute('insert into pending(message_id, quarantined) '
+                         'values(?,?)', (message_id, False))
 
     def pop(self, how_many=1):
         """ See IPendingQueue.
         """
         cursor = self.sql.execute('select id, message_id from pending '
-                                 'order by id')
+                                 'where quarantined=0 order by id')
         rows = cursor.fetchmany(how_many)
         cursor.close()
         count = 0
@@ -80,13 +81,51 @@ class PendingQueue(object):
         if cursor.rowcount == 0:
             raise KeyError(message_id)
 
+    def quarantine(self, message_id):
+        """ See IPendingQueue
+        """
+        if message_id in self:
+            self.sql.execute(
+                'update pending set quarantined=? where message_id=?',
+                (True, message_id)
+            )
+        else:
+            self.sql.execute(
+                "insert into pending(message_id,quarantined) values (?, ?)",
+                (message_id, True)
+            )
+
+    def iter_quarantine(self):
+        """ See IPendingQueue
+        """
+        results = self.sql.execute(
+            'select message_id from pending where quarantined=1'
+        )
+        for result in results:
+            yield result[0]
+
+
+    def clear_quarantine(self):
+        """ See IPendingQueue
+        """
+
     def __nonzero__(self):
         """ See IPendingQueue.
         """
         return self.sql.execute('select count(*) from pending').fetchone()[0]
 
     def __iter__(self):
-        return self.sql.execute('select id, message_id from pending ')
+        return self.sql.execute(
+            'select id, message_id from pending where quarantined=0'
+        )
+
+    def __contains__(self, message_id):
+        cursor = self.sql.execute(
+            'select message_id from pending where message_id=?', (message_id,)
+            )
+        contains = cursor.fetchone() is not None
+        cursor.close()
+        return contains
 
     def __del__(self):
         self.sql.close()
