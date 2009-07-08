@@ -1,6 +1,24 @@
 repoze.mailin Changelog
 =======================
 
+0.3.1 (2009-07-08)
+------------------
+
+- N.B.:  the quarantine feature introduced in version 0.3 requires a
+  backward-incompatible change to the database scehma.  Existing databases
+  will not have the extra columns required to support the new feature.
+  The simplest fix is as follows:
+  
+  * Stop any ongoing processing using the pending database.
+  
+  * Dump any existing message IDs from the database.
+
+  * Move aside the database file.
+
+  * Rerun the script which creates the database file.
+
+  * Restore any dumped message IDs.
+
 0.3 (2009-07-08)
 ----------------
 
