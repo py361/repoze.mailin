@@ -128,7 +128,9 @@ class PendingQueue(object):
     def __nonzero__(self):
         """ See IPendingQueue.
         """
-        return self.sql.execute('select count(*) from pending').fetchone()[0]
+        return self.sql.execute(
+            'select count(*) from pending where quarantined=0'
+            ).fetchone()[0]
 
     def __iter__(self):
         return self.sql.execute(

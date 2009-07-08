@@ -275,6 +275,22 @@ class PendingQueueTests(unittest.TestCase):
         self.assertEqual(found[0], '<defghi@example.com>')
         self.assertRaises(KeyError, pq.get_error_message, MESSAGE_IDS[1])
 
+    def test_nonzero_with_quarantine(self):
+        MESSAGE_IDS = ['<abcdef@example.com>',
+                       '<defghi@example.com>',
+                       '<ghijkl@example.com>',
+                      ]
+        pq = self._makeOne()
+        for message_id in MESSAGE_IDS:
+            pq.push(message_id)
+        pq.quarantine(MESSAGE_IDS[1])
+        found = []
+        while pq:
+            found.append(list(pq.pop())[0])
+        self.assertEqual(len(found), 2)
+        self.assertEqual(found[0], '<abcdef@example.com>')
+        self.assertEqual(found[1], '<ghijkl@example.com>')
+
 class DummySql(object):
     closed = False
 
