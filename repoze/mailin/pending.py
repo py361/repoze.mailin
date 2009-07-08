@@ -108,6 +108,7 @@ class PendingQueue(object):
     def clear_quarantine(self):
         """ See IPendingQueue
         """
+        self.sql.execute('update pending set quarantined=0')
 
     def __nonzero__(self):
         """ See IPendingQueue.
