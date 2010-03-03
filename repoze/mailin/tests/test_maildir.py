@@ -35,7 +35,8 @@ class MaildirStoreTests(unittest.TestCase):
     def _makeMessageText(self, message_id='<abc123@example.com>', when=None):
         try:
             from email.utils import formatdate
-        except ImportError: # Python 2.4
+        except ImportError: # pragma: no cover
+            # Python 2.4
             from email.Utils import formatdate
         lines = ['Date: %s' % formatdate(when),
                  'Message-Id: %s' % message_id,
