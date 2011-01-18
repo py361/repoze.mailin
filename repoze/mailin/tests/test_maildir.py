@@ -70,7 +70,6 @@ class MaildirStoreTests(unittest.TestCase):
         verifyObject(IMessageStore, self._makeOne())
 
     def test_ctor_defaults(self):
-        import os
         md = self._makeOne()
         self.failUnless(md.sql.execute(
                              'select * from sqlite_master '
@@ -85,7 +84,6 @@ class MaildirStoreTests(unittest.TestCase):
         self.failUnless(os.path.exists(os.path.join(md.path, 'metadata.db')))
 
     def test_ctor_w_isolation_level(self):
-        import os
         md = self._makeOne(isolation_level='DEFERRED')
         self.assertEqual(md.sql.isolation_level, 'DEFERRED')
 

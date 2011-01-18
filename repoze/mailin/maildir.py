@@ -9,7 +9,6 @@ except ImportError: # Python < 2.6  #pragma NO COVERAGE
 from zope.interface import implements
 
 from repoze.mailin.interfaces import IMessageStore
-from repoze.mailin.interfaces import IPendingQueue
 
 class MaildirStore:
     """ Use a :class:`mailbox.Maildir` to store messges.
