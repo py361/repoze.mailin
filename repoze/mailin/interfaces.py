@@ -69,6 +69,14 @@ class IPendingQueue(Interface):
 
 class StopProcessing(Exception):
     """ Raised by IMessageFilter instances to halt procesing of a message.
+
+    o The application may still commit the current transaction.
+    """
+
+class CancelProcessing(StopProcessing):
+    """ Raised by IMessageFilter instances to halt procesing of a message.
+
+    o The application must abort the current transaction.
     """
 
 class IBlackboardFactory(Interface):
