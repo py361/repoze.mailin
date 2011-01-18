@@ -254,6 +254,7 @@ class Pollster:
         for message_id, message in self.fetch_next():
             if not self.dry_run:
                 md[message_id] = message
+                pq.push(message_id)
             if self.verbose > 1:
                 print ' -', message_id
 
