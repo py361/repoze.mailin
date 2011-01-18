@@ -68,6 +68,12 @@ class PendingQueueTests(unittest.TestCase):
         pq = self._makeOne(logger=logger)
         self.failUnless(pq.logger is logger)
 
+    def test_ctor_w_isolation_level_and_logger(self):
+        logger = DummyLogger()
+        pq = self._makeOne(isolation_level='DEFERRED', logger=logger)
+        self.assertEqual(pq.sql.isolation_level, 'DEFERRED')
+        self.failUnless(pq.logger is logger)
+
     def test___nonzero___empty(self):
         pq = self._makeOne()
         self.failIf(pq)
