@@ -2,14 +2,51 @@ import unittest
 
 _marker = object()
 
-class MaildirStoreTests(unittest.TestCase):
-
+class _Base(object):
     _tempdir = None
 
     def tearDown(self):
         if self._tempdir is not None:
             import shutil
             shutil.rmtree(self._tempdir)
+
+    def _getTempdir(self):
+        import tempfile
+        if self._tempdir is None:
+            self._tempdir = tempfile.mkdtemp()
+        return self._tempdir
+
+
+class SaneFilenameMaildirTests(_Base, unittest.TestCase):
+
+    def setUp(self):
+        super(SaneFilenameMaildirTests, self).setUp()
+        self._setNow(None)
+
+    def tearDown(self):
+        super(SaneFilenameMaildirTests, self).tearDown()
+        self._setNow(None)
+
+    def _getTargetClass(self):
+        from repoze.mailin.maildir import SaneFilenameMaildir
+        return SaneFilenameMaildir
+
+    def _makeOne(self, dirname=None, factory=None, create=True):
+        if dirname is None:
+            dirname = self._getTempdir()
+        return self._getTargetClass()(dirname, factory, create)
+
+    def _setNow(self, value):
+        import repoze.mailin.maildir
+        repoze.mailin.maildir._NOW = value
+
+    def test_ctor(self):
+        from mailbox import Maildir
+        md = self._makeOne()
+        self.failUnless(isinstance(md, Maildir))
+
+
+class MaildirStoreTests(_Base, unittest.TestCase):
 
     def _getTargetClass(self):
         from repoze.mailin.maildir import MaildirStore
@@ -25,12 +62,6 @@ class MaildirStoreTests(unittest.TestCase):
         if isolation_level is _marker:
             return self._getTargetClass()(path, dbfile)
         return self._getTargetClass()(path, dbfile, isolation_level)
-
-    def _getTempdir(self):
-        import tempfile
-        if self._tempdir is None:
-            self._tempdir = tempfile.mkdtemp()
-        return self._tempdir
 
     def _makeMessageText(self, message_id='<abc123@example.com>', when=None):
         try:
@@ -51,13 +82,13 @@ class MaildirStoreTests(unittest.TestCase):
         return message_from_string(self._makeMessageText(message_id, when))
 
     def _populateInbox(self, message_ids):
-        import mailbox
         import os
+        from repoze.mailin.maildir import SaneFilenameMaildir
         td = self._getTempdir()
         md_name = os.path.join(td, 'Maildir')
-        md = mailbox.Maildir(md_name, factory=None, create=True)
+        md = SaneFilenameMaildir(md_name, factory=None, create=True)
         for message_id in message_ids:
-            md.add(self._makeMessageText(message_id))
+            uniq = md.add(self._makeMessageText(message_id))
 
     def test_class_conforms_to_IMessageStore(self):
         from zope.interface.verify import verifyClass

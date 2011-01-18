@@ -1,6 +1,10 @@
+import errno
 import mailbox
+import math
 import os
+import socket
 import sqlite3
+import time
 try:
     from email.utils import parsedate
 except ImportError: # Python < 2.6  #pragma NO COVERAGE
@@ -9,6 +13,52 @@ except ImportError: # Python < 2.6  #pragma NO COVERAGE
 from zope.interface import implements
 
 from repoze.mailin.interfaces import IMessageStore
+
+_NOW = None
+def _now():
+    if _NOW is not None:
+        return _NOW
+    return time.time()
+
+
+class SaneFilenameMaildir(mailbox.Maildir):
+    """ Subclass stdlib Maildir to override '_create_tmp' w/ sane filenames.
+    """
+    _count = 0
+
+    def _create_tmp(self):
+        """Create a file in the tmp subdirectory and open and return it."""
+        klass = self.__class__
+        now = time.time()
+        now_i, now_f = math.modf(now)
+        hostname = socket.gethostname()
+        if '/' in hostname:
+            hostname = hostname.replace('/', r'\057')
+        if ':' in hostname:
+            hostname = hostname.replace(':', r'\072')
+        uniq = "%010d.M%06dP%06dQ%06d.%s" % (now,
+                                             now_f % 1e6,
+                                             os.getpid(),
+                                             klass._count,
+                                             hostname)
+        path = os.path.join(self._path, 'tmp', uniq)
+        try:
+            os.stat(path)
+        except OSError, e:
+            if e.errno == errno.ENOENT:
+                klass._count += 1
+                try:
+                    return mailbox._create_carefully(path)
+                except OSError, e:
+                    if e.errno != errno.EEXIST:
+                        raise
+            else:
+                raise
+
+        # Fall through to here if stat succeeded or open raised EEXIST.
+        raise mailbox.ExternalClashError(
+                'Name clash prevented file creation: %s' % path)
+
 
 class MaildirStore:
     """ Use a :class:`mailbox.Maildir` to store messges.
@@ -132,7 +182,9 @@ class MaildirStore:
         return '%04d.%02d.%02d' % (yy, mm, dd)
 
     def _getMaildir(self, folder=None, create=True):
-        root = md = mailbox.Maildir(self.mdpath, factory=None, create=create)
+        root = md = SaneFilenameMaildir(self.mdpath,
+                                        factory=None,
+                                        create=create)
         if folder is not None:
             if folder not in root.list_folders():
                 if not create:
