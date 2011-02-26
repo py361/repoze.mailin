@@ -4,6 +4,8 @@ repoze.mailin Changelog
 Unreleased
 ----------
 
+- Moved to GitHub.
+
 - Ensure that the ``pollster`` script pushes message IDs onto the pending
   queue, if configured.
 
