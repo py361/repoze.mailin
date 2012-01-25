@@ -126,7 +126,7 @@ Glossary
 
     domain object
         An instance of a custom Python class, created and managed by
-        one or more of Friday's plugins.
+        one or more plugins.
 
     entry point
         A conventional name, as defined by
