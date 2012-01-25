@@ -1,8 +1,8 @@
 repoze.mailin Changelog
 =======================
 
-Unreleased
-----------
+0.4 (2012-01-25)
+----------------
 
 - Added an option to pass None to the the 'pop' method of the pending
   queue:  in this case, the queue returns *all* pending messsage IDs.
