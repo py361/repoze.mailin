@@ -29,7 +29,7 @@ class SaneFilenameMaildir(mailbox.Maildir):
     def _create_tmp(self):
         """Create a file in the tmp subdirectory and open and return it."""
         klass = self.__class__
-        now = time.time()
+        now = _now()
         now_i, now_f = math.modf(now)
         hostname = socket.gethostname()
         if '/' in hostname:
