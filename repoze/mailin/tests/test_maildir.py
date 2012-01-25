@@ -21,11 +21,9 @@ class SaneFilenameMaildirTests(_Base, unittest.TestCase):
 
     def setUp(self):
         super(SaneFilenameMaildirTests, self).setUp()
-        self._setNow(None)
 
     def tearDown(self):
         super(SaneFilenameMaildirTests, self).tearDown()
-        self._setNow(None)
 
     def _getTargetClass(self):
         from repoze.mailin.maildir import SaneFilenameMaildir
@@ -35,10 +33,6 @@ class SaneFilenameMaildirTests(_Base, unittest.TestCase):
         if dirname is None:
             dirname = self._getTempdir()
         return self._getTargetClass()(dirname, factory, create)
-
-    def _setNow(self, value):
-        import repoze.mailin.maildir
-        repoze.mailin.maildir._NOW = value
 
     def test_ctor(self):
         from mailbox import Maildir

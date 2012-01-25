@@ -14,22 +14,18 @@ from zope.interface import implements
 
 from repoze.mailin.interfaces import IMessageStore
 
-_NOW = None
-def _now():
-    if _NOW is not None:
-        return _NOW
-    return time.time()
-
 
 class SaneFilenameMaildir(mailbox.Maildir):
     """ Subclass stdlib Maildir to override '_create_tmp' w/ sane filenames.
     """
     _count = 0
 
-    def _create_tmp(self):
+    def _create_tmp(self): #pragma NO COVERAGE
         """Create a file in the tmp subdirectory and open and return it."""
+        # Skipping coverage because the mailbox module doesn't let us
+        # hook the file creation.
         klass = self.__class__
-        now = _now()
+        now = time.time()
         now_i, now_f = math.modf(now)
         hostname = socket.gethostname()
         if '/' in hostname:
