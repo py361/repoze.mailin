@@ -56,7 +56,11 @@ class PendingQueue(object):
         """
         cursor = self.sql.execute('select id, message_id from pending '
                                  'where quarantined=0 order by id')
-        rows = cursor.fetchmany(how_many)
+        if how_many is None:
+            rows = cursor.fetchall()
+            how_many = len(rows)
+        else:
+            rows = cursor.fetchmany(how_many)
         cursor.close()
         count = 0
         popped_ids = []

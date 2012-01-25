@@ -33,6 +33,8 @@ class IPendingQueue(Interface):
     def pop(how_many=1):
         """ Retrieve the next 'how_many' message IDs to be processed.
 
+        - If 'how_many' is None, then return all available message IDs.
+
         - May return fewer than 'how_many' IDs, if the queue is emptied.
 
         - Popped messages are no longer present in the queue.

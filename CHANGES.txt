@@ -4,6 +4,9 @@ repoze.mailin Changelog
 Unreleased
 ----------
 
+- Added an option to pass None to the the 'pop' method of the pending
+  queue:  in this case, the queue returns *all* pending messsage IDs.
+
 - Moved to GitHub.
 
 - Ensure that the ``pollster`` script pushes message IDs onto the pending

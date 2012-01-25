@@ -102,6 +102,13 @@ class PendingQueueTests(unittest.TestCase):
         self.assertEqual(logger._logged[0],
                          (('Queue underflow: requested 2, popped 0',), {}))
 
+    def test_pop_empty_with_None(self):
+        logger = DummyLogger()
+        pq = self._makeOne(logger=logger)
+        found = pq.pop(None)
+        self.assertEqual(len(found), 0)
+        self.failIf(logger._logged)
+
     def test_remove_nonesuch_raises_KeyError(self):
         pq = self._makeOne()
         self.assertRaises(KeyError, pq.remove, 'nonesuch')
@@ -118,6 +125,16 @@ class PendingQueueTests(unittest.TestCase):
         pq.push(MESSAGE_ID)
         pq.pop()
         self.failIf(pq)
+
+    def test_pop_nonempty_with_None(self):
+        MESSAGE_ID_1 ='<defghi@example.com>'
+        MESSAGE_ID_2 ='<jklmn@example.com>'
+        pq = self._makeOne()
+        pq.push(MESSAGE_ID_1)
+        pq.push(MESSAGE_ID_2)
+        popped = pq.pop(None)
+        self.failIf(pq)
+        self.assertEqual(popped, [MESSAGE_ID_1, MESSAGE_ID_2])
 
     def test_push_then_pop_returns_message_ID(self):
         MESSAGE_ID ='<defghi@example.com>'
