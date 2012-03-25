@@ -26,6 +26,8 @@ except:
     README = ''
     CHANGES = ''
 
+testing_extras = ['nose', 'coverage']
+
 setup(name='repoze.mailin',
       version=__version__,
       description='Map inbound mail onto application-defined handlers',
@@ -55,6 +57,8 @@ setup(name='repoze.mailin',
         [console_scripts]
         draino = repoze.mailin.scripts.draino:main
         pollster = repoze.mailin.scripts.pollster:main
-      """
-      )
-
+      """,
+      extras_require = {
+        'testing': testing_extras,
+      },
+)

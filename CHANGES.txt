@@ -1,6 +1,12 @@
 repoze.mailin Changelog
 =======================
 
+After 0.4
+---------
+
+- Added 'setup.py dev' alias (runs ``setup.py develop`` plus installs
+  ``nose`` and ``coverage``).
+
 0.4 (2012-01-25)
 ----------------
 
