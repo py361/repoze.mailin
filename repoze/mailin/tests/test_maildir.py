@@ -31,7 +31,10 @@ class SaneFilenameMaildirTests(_Base, unittest.TestCase):
 
     def _makeOne(self, dirname=None, factory=None, create=True):
         if dirname is None:
+            import os
             dirname = self._getTempdir()
+            for name in 'tmp', 'cur', 'new':
+                os.mkdir(os.path.join(dirname, name))
         return self._getTargetClass()(dirname, factory, create)
 
     def test_ctor(self):
